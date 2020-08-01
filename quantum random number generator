@@ -1,0 +1,115 @@
+
+
+from qiskit import QuantumCircuit
+from qiskit import Aer, execute
+import sys
+
+
+def binaryToDecimal(n): 
+        
+    return int(n,2)
+
+x = input("Please choose the upper limit of the range you wish to generate a value within: (1-100)")
+
+if not (x.isdigit()):
+    print("invalid input: must be an integer")
+    sys.exit()
+x = int(x)
+
+if (x>100 or x<1):
+    print("invalid input: must be within the range 1-100")
+    sys.exit()
+    
+def run_and_output(circ):
+    backend_sim = Aer.get_backend('qasm_simulator')
+    sim = execute(circ, backend_sim, shots=1)
+    sim_result = sim.result()
+    counts = sim_result.get_counts(circ)
+    binary = str(counts)
+    binary = binary.split("'")
+    output = binaryToDecimal(binary[1])
+    return output
+    
+#functions for getting random values in different ranges
+
+def oneRandomValue():
+    circ = QuantumCircuit(1,1)
+    circ.h(0)
+    circ.measure([0],[0])
+    
+    final = run_and_output(circ)
+    return final
+
+def threeRandomValue():
+    circ = QuantumCircuit(2,2)
+    circ.h(0)
+    circ.h(1)
+    circ.measure([0,1],[1,0])
+    
+    final = run_and_output(circ)
+    return final
+
+def sevenRandomValue():
+    circ = QuantumCircuit(3,3)
+    for i in range(3):
+        circ.h(i)
+    circ.measure([0,1,2],[2,1,0])
+    
+    final = run_and_output(circ)
+    return final
+
+def fifteenRandomValue():
+    circ = QuantumCircuit(4,4)
+    for i in range(4):
+        circ.h(i)
+    circ.measure([0,1,2,3],[3,2,1,0])
+    
+    final = run_and_output(circ)
+    return final
+
+def thirtyoneRandomValue():
+    circ = QuantumCircuit(5,5)
+    for i in range(5):
+        circ.h(i)
+    circ.measure([0,1,2,3,4],[4,3,2,1,0])
+    
+    final = run_and_output(circ)
+    return final
+
+def sixtythreeRandomValue():
+    circ = QuantumCircuit(6,6)
+    for i in range(6):
+        circ.h(i)
+    circ.measure([0,1,2,3,4,5],[5,4,3,2,1,0])
+    
+    final = run_and_output(circ)
+    return final
+    
+#generating value based on input
+
+total = 0
+
+for j in range(1, int(x/63) + 1):
+    total += sixtythreeRandomValue()
+while (int(x/63) > 0):
+    x -= 63
+for j in range(1, int(x/31) + 1):
+    total += thirtyoneRandomValue()
+while (int(x/31) > 0):
+    x -= 31
+for j in range(1, int(x/15) + 1):
+    total += fifteenRandomValue()
+while (int(x/15) > 0):
+    x -= 15
+for j in range(1, int(x/7) + 1):
+    total += sevenRandomValue()
+while (int(x/7) > 0):
+    x -= 7
+for j in range(1, int(x/3) + 1):
+    total += threeRandomValue()
+while (int(x/3) > 0):
+    x -= 3
+for j in range(1, x + 1):
+    total += oneRandomValue()
+
+print(total)
